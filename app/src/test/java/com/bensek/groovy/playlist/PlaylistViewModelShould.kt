@@ -21,11 +21,14 @@ class PlaylistViewModelShould: BaseUnitTest() {
     private val exception = RuntimeException("Something went wrong")
 
     private fun mockSuccessfulCase(): PlaylistViewModel {
-        whenever(repository.getPlaylists()).thenReturn(
-            flow {
-                emit(expected)
-            }
-        )
+        runBlocking {
+
+            whenever(repository.getPlaylists()).thenReturn(
+                flow {
+                    emit(expected)
+                }
+            )
+        }
         return PlaylistViewModel(repository)
     }
 
