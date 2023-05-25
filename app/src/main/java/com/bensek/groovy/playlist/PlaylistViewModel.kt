@@ -1,5 +1,6 @@
 package com.bensek.groovy.playlist
 
+import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

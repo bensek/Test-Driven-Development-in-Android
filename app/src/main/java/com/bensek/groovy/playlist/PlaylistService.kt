@@ -1,10 +1,22 @@
 package com.bensek.groovy.playlist
 
+import android.util.Log
+import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 
-class PlaylistService {
+class PlaylistService(
+    private val api: PlaylistAPI
+) {
     suspend fun fetchPlaylists(): Flow<Result<List<Playlist>>> {
-        TODO()
+        return flow {
+
+            Log.v("TDD", "Playlist List -> ${api.fetchAllPlaylists().size}")
+            emit(Result.success(api.fetchAllPlaylists()))
+        }.catch {
+            emit(Result.failure(RuntimeException("Something went wrong")))
+        }
     }
 
 }
