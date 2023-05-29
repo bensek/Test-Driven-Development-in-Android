@@ -28,7 +28,7 @@ import org.junit.Rule
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class PlaylistFeature {
+class PlaylistFeature: BaseUITest() {
 
     val mActivityRule = ActivityTestRule(MainActivity::class.java)
         @Rule get
@@ -48,7 +48,7 @@ class PlaylistFeature {
             .check(matches(withText("Hard Rock Cafe")))
             .check(matches(isDisplayed()))
 
-        onView(allOf(withId(R.id.playlist_category), isDescendantOfA(nthChildOf(withId(R.id.playlists_list), 0))))
+        onView(allOf(withId(R.id.playlist_category), isDescendantOfA(nthChildOf(withId(R.id.playlists_list), 1))))
             .check(matches(withText("rock")))
             .check(matches(isDisplayed()))
 
@@ -68,21 +68,15 @@ class PlaylistFeature {
         assertNotDisplayed(R.id.loader)
     }
 
-    private fun nthChildOf(parentMatcher: Matcher<View>, childPosition: Int): Matcher<View> {
-        return object : TypeSafeMatcher<View>() {
-            override fun describeTo(description: Description) {
-                description.appendText("position $childPosition of parent ")
-                parentMatcher.describeTo(description)
-            }
+    @Test
+    fun displaysRockImageForRockList() {
+        Thread.sleep(4000)
+        onView(allOf(withId(R.id.playlist_image), isDescendantOfA(nthChildOf(withId(R.id.playlists_list), 0))))
+            .check(matches(withDrawable(R.mipmap.rock)))
+            .check(matches(isDisplayed()))
 
-            public override fun matchesSafely(view: View): Boolean {
-                if (view.parent !is ViewGroup) return false
-                val parent = view.parent as ViewGroup
-
-                return (parentMatcher.matches(parent)
-                        && parent.childCount > childPosition
-                        && parent.getChildAt(childPosition) == view)
-            }
-        }
+        onView(allOf(withId(R.id.playlist_image), isDescendantOfA(nthChildOf(withId(R.id.playlists_list), 3))))
+            .check(matches(withDrawable(R.mipmap.rock)))
+            .check(matches(isDisplayed()))
     }
 }

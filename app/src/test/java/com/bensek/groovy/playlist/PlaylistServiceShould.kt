@@ -14,6 +14,7 @@ class PlaylistServiceShould: BaseUnitTest() {
     private lateinit var service: PlaylistService
     private val api: PlaylistAPI = mock()
     private val playlists = mock<List<Playlist>>()
+    private val playlistsRaw = mock<List<PlaylistRaw>>()
 
     @Test
     fun fetchPlaylistFromAPI() = runBlockingTest {
@@ -26,11 +27,11 @@ class PlaylistServiceShould: BaseUnitTest() {
 
     @Test
     fun convertValuesToFlowResultAndEmitsThem() = runBlockingTest {
-        whenever(api.fetchAllPlaylists()).thenReturn(playlists)
+        whenever(api.fetchAllPlaylists()).thenReturn(playlistsRaw)
 
         service = PlaylistService(api)
 
-        assertEquals(Result.success(playlists), service.fetchPlaylists().first())
+        assertEquals(Result.success(playlistsRaw), service.fetchPlaylists().first())
     }
 
     @Test

@@ -11,10 +11,8 @@ import javax.inject.Inject
 class PlaylistService @Inject constructor(
     private val api: PlaylistAPI
 ) {
-    suspend fun fetchPlaylists(): Flow<Result<List<Playlist>>> {
+    suspend fun fetchPlaylists(): Flow<Result<List<PlaylistRaw>>> {
         return flow {
-
-            Log.v("TDD", "Playlist List -> ${api.fetchAllPlaylists().size}")
             emit(Result.success(api.fetchAllPlaylists()))
         }.catch {
             emit(Result.failure(RuntimeException("Something went wrong")))
