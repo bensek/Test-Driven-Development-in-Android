@@ -12,6 +12,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import com.bensek.groovy.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_playlist.*
+import kotlinx.android.synthetic.main.fragment_playlist.view.*
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -32,15 +34,21 @@ class PlaylistFragment : Fragment() {
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(PlaylistViewModel::class.java)
 
+        viewModel.loader.observe(this as LifecycleOwner) { loading ->
+            when (loading) {
+                true -> loader.visibility = View.VISIBLE
+                else -> loader.visibility = View.GONE
+            }
+        }
+
         viewModel.playlists.observe(this as LifecycleOwner) { playlists ->
             if (playlists.getOrNull() != null) {
-                with(view as RecyclerView) {
+                with(view.playlists_list as RecyclerView) {
                     layoutManager = LinearLayoutManager(context)
                     adapter = MyPlaylistRecyclerViewAdapter(playlists.getOrNull()!!)
                 }
             }
         }
-
 
         return view
     }

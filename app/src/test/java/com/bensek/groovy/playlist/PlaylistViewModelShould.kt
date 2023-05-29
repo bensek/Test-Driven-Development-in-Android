@@ -11,6 +11,7 @@ import org.junit.Test
 
 import org.junit.Assert.*
 import com.bensek.groovy.utils.BaseUnitTest
+import com.bensek.groovy.utils.captureValues
 import com.bensek.groovy.utils.getValueForTest
 
 class PlaylistViewModelShould: BaseUnitTest() {
@@ -19,18 +20,6 @@ class PlaylistViewModelShould: BaseUnitTest() {
     private val playlists = mock<List<Playlist>>()
     private val expected = Result.success(playlists)
     private val exception = RuntimeException("Something went wrong")
-
-    private fun mockSuccessfulCase(): PlaylistViewModel {
-        runBlocking {
-
-            whenever(repository.getPlaylists()).thenReturn(
-                flow {
-                    emit(expected)
-                }
-            )
-        }
-        return PlaylistViewModel(repository)
-    }
 
     @Test
     fun getPlaylistsFromRepository() = runBlockingTest{
@@ -50,6 +39,51 @@ class PlaylistViewModelShould: BaseUnitTest() {
 
     @Test
     fun emitErrorWhenReceiveError() {
+       val viewModel = mockErrorCase()
+
+        assertEquals(exception, viewModel.playlists.getValueForTest()?.exceptionOrNull())
+    }
+
+    @Test
+    fun showSpinnerWhileLoading() = runBlockingTest {
+        val viewModel = mockSuccessfulCase()
+        viewModel.loader.captureValues {
+            viewModel.playlists.getValueForTest()
+            assertEquals(true, values[0])
+        }
+    }
+
+    @Test
+    fun closeLoaderAfterPlaylistsLoad() = runBlockingTest {
+        val viewModel = mockSuccessfulCase()
+        viewModel.loader.captureValues {
+            viewModel.playlists.getValueForTest()
+            assertEquals(false, values.last())
+        }
+    }
+
+    @Test
+    fun closeLoaderAfterError() = runBlockingTest {
+        val viewModel = mockErrorCase()
+        viewModel.loader.captureValues {
+            viewModel.playlists.getValueForTest()
+            assertEquals(false, values.last())
+        }
+    }
+
+    private fun mockSuccessfulCase(): PlaylistViewModel {
+        runBlocking {
+
+            whenever(repository.getPlaylists()).thenReturn(
+                flow {
+                    emit(expected)
+                }
+            )
+        }
+        return PlaylistViewModel(repository)
+    }
+
+    private fun mockErrorCase(): PlaylistViewModel {
         runBlocking {
             whenever(repository.getPlaylists()).thenReturn(
                 flow {
@@ -58,8 +92,6 @@ class PlaylistViewModelShould: BaseUnitTest() {
             )
         }
 
-        val viewModel = PlaylistViewModel(repository)
-
-        assertEquals(exception, viewModel.playlists.getValueForTest()?.exceptionOrNull())
+        return PlaylistViewModel(repository)
     }
 }
