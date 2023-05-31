@@ -73,7 +73,6 @@ class PlaylistViewModelShould: BaseUnitTest() {
 
     private fun mockSuccessfulCase(): PlaylistViewModel {
         runBlocking {
-
             whenever(repository.getPlaylists()).thenReturn(
                 flow {
                     emit(expected)

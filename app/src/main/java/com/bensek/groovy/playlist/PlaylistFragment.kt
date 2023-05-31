@@ -35,26 +35,37 @@ class PlaylistFragment : Fragment() {
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(PlaylistViewModel::class.java)
 
+        observeLoader()
+
+        observePlaylist(view)
+
+        return view
+    }
+
+    private fun observeLoader() {
         viewModel.loader.observe(this as LifecycleOwner) { loading ->
             when (loading) {
                 true -> loader.visibility = View.VISIBLE
                 else -> loader.visibility = View.GONE
             }
         }
+    }
 
+    private fun observePlaylist(view: View) {
         viewModel.playlists.observe(this as LifecycleOwner) { playlists ->
             if (playlists.getOrNull() != null) {
                 with(view.playlists_list as RecyclerView) {
                     layoutManager = LinearLayoutManager(context)
                     adapter = MyPlaylistRecyclerViewAdapter(playlists.getOrNull()!!) { id ->
-                        val action = PlaylistFragmentDirections.actionPlaylistFragmentToPlaylistDetailFragment(id)
+                        val action =
+                            PlaylistFragmentDirections.actionPlaylistFragmentToPlaylistDetailFragment(
+                                id
+                            )
                         findNavController().navigate(action)
                     }
                 }
             }
         }
-
-        return view
     }
 
     companion object {

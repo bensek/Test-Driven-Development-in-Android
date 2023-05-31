@@ -31,9 +31,6 @@ import org.junit.Rule
 @RunWith(AndroidJUnit4::class)
 class PlaylistFeature: BaseUITest() {
 
-    val mActivityRule = ActivityTestRule(MainActivity::class.java)
-        @Rule get
-
     @Test
     fun displayScreenTitle() {
         assertDisplayed("Playlists")
